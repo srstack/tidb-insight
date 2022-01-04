@@ -47,7 +47,7 @@ func (cs *ChronyStat) getChronyInfo() {
 		}
 		cs.LeapStatus = err.Error()
 	}
-	// when no `ntpq` found, just return
+	// when no `chronyc` found, just return
 	if syncd == "" {
 		return
 	}
