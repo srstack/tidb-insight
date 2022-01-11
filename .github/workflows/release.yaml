@@ -15,18 +15,26 @@ on:
         required: true
 
 jobs:
-  release:
-    runs-on: ubuntu-18.04
+  release-linux:
     timeout-minutes: 30
     strategy:
       fail-fast: true
       matrix:
+        platform:
+          - "ubuntu-18.04"
+          - "macOS-latest"
         os:
           - "linux"
           - "darwin"
         arch:
           - "amd64"
           - "arm64"
+        exclude:
+          - platform: ubuntu-18.04
+            os: "linux"
+          - platform: macOS-latest
+            os: "darwin"
+    runs-on: ${{ matrix.platform }}
     env:
       working-directory: ${{ github.workspace }}/go/src/github.com/${{ github.repository }}
     steps:
@@ -45,7 +53,8 @@ jobs:
 
       - name: install toolchains
         id: install_toolchains
-        run: sudo apt-get update && sudo apt-get -qy install gcc-aarch64-linux-gnu gcc
+        if:  ${{ matrix.platform }} == "ubuntu-18.04"
+        run: sudo apt-get update && sudo apt-get -qy install gcc-aarch64-linux-gnu
 
       - name: Build for ${{ matrix.os }}-${{ matrix.arch }}
         id: build_insight
@@ -59,6 +68,9 @@ jobs:
           export CGO_ENABLED=1 
           if [ "$GOARCH" = "arm64" ]; then
             export CC=aarch64-linux-gnu-gcc
+          fi
+          if [ "$GOOS" = "darwin" ]; then
+            export CC=clang
           fi
 
           BUILD_FLAGS='-trimpath' make -C collector static && \
@@ -115,3 +127,4 @@ jobs:
           sleep $[ ( $RANDOM % 10 ) ]s
           ${TIUP_BIN} mirror publish insight ${REL_VER} package/insight-${REL_VER}-${ARCH}.tar.gz insight --arch ${{ matrix.arch }} --os ${{ matrix.os }} --desc="${TIUP_desc}" --standalone --hide
 
+  
