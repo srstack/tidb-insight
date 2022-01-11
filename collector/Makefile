@@ -7,7 +7,8 @@ else
 endif
 GOOS    := $(if $(GOOS),$(GOOS),"")
 GOARCH  := $(if $(GOARCH),$(GOARCH),"")
-GOENV   := GO111MODULE=on CGO_ENABLED=1 GOOS=$(GOOS) GOARCH=$(GOARCH)
+CGO_ENABLED := $(if $(CGO_ENABLED),$(CGO_ENABLED), 1)
+GOENV   := GO111MODULE=on CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) GOARCH=$(GOARCH)
 GOBUILD := $(GOENV) $(GO) build $(BUILD_FLAGS)
 
 COMMIT  := $(shell git describe --tags --always --dirty)
