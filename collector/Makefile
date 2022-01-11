@@ -7,13 +7,12 @@ else
 endif
 GOOS    := $(if $(GOOS),$(GOOS),"")
 GOARCH  := $(if $(GOARCH),$(GOARCH),"")
-CGO_ENABLED := $(if $(CGO_ENABLED),$(CGO_ENABLED), 1)
 ifeq "$(GOOS)" "darwin"
   CGO_ENABLED=0
 else
   CGO_ENABLED=1
 endif
-GOENV   := GO111MODULE=on  GOOS=$(GOOS) GOARCH=$(GOARCH)
+GOENV   := GO111MODULE=on CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) GOARCH=$(GOARCH)
 GOBUILD := $(GOENV) $(GO) build $(BUILD_FLAGS)
 
 COMMIT  := $(shell git describe --tags --always --dirty)
