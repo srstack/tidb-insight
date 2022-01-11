@@ -108,23 +108,4 @@ jobs:
           # package component
           ${TAR} -C bin -czf package/insight-${REL_VER}-${ARCH}.tar.gz insight fio
 
-      - name: Publish packages
-        working-directory: ${{ env.working-directory }}
-        env:
-          TIUP_HOME: ${{ steps.packaging.outputs.TIUP_HOME }}
-          TIUP_BIN: ${{ steps.packaging.outputs.TIUP_BIN }}
-          ARCH: ${{ matrix.os }}-${{ matrix.arch }}
-          REL_VER: ${{ github.event.inputs.version }}
-          TIUP_MIRRORS: ${{ github.event.inputs.mirror }}
-          desc: "TiDB-Insight collector"
-        run: |
-          ${TIUP_BIN} mirror set ${TIUP_MIRRORS}
-
-          echo ${{ secrets.TIUP_COMP_KEY_PINGCAP }} | base64 -d > $TIUP_HOME/keys/private.json
-
-          # add a random delay before actually publishing, this can help reduce manifest conflict
-          # when there are multiple jobs running in parallel
-          sleep $[ ( $RANDOM % 10 ) ]s
-          ${TIUP_BIN} mirror publish insight ${REL_VER} package/insight-${REL_VER}-${ARCH}.tar.gz insight --arch ${{ matrix.arch }} --os ${{ matrix.os }} --desc="${TIUP_desc}" --standalone --hide
-
-  
+     
