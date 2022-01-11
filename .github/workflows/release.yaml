@@ -15,7 +15,7 @@ on:
         required: true
 
 jobs:
-  release-linux:
+  release:
     timeout-minutes: 30
     strategy:
       fail-fast: true
@@ -53,8 +53,11 @@ jobs:
 
       - name: install toolchains
         id: install_toolchains
-        if:  ${{ matrix.platform }} == "ubuntu-18.04"
-        run: sudo apt-get update && sudo apt-get -qy install gcc-aarch64-linux-gnu
+        run: |
+          if [ `uname` = "Linux" ]; then
+            sudo apt-get update && sudo apt-get -qy install gcc-aarch64-linux-gnu
+          fi
+          echo "install_toolchains success."
 
       - name: Build for ${{ matrix.os }}-${{ matrix.arch }}
         id: build_insight
