@@ -73,6 +73,7 @@ jobs:
           fi
           if [ "$GOOS" = "darwin" ]; then
             export CC=clang
+            export CGO_ENABLED=0
           fi
 
           BUILD_FLAGS='-trimpath' make -C collector static && \
